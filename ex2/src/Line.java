@@ -8,6 +8,7 @@ public class Line {
      */
     private Point start;
     private Point end;
+    private boolean isVertical = false;
 
     /**
      * constructor to initialize current line start and end points with given points
@@ -44,6 +45,9 @@ public class Line {
             this.start = new Point(x2, y2);
             this.end = new Point(x1, y1);
         }
+        if(this.start.getX() == this.end().getX()) {
+            isVertical = true;
+        }
     }
 
     /**
@@ -58,13 +62,7 @@ public class Line {
          * check if the start and point of line don't have same x coordinate. if so we
          * can't perform line equation logic on the line because it doesn't have slope.
          */
-        if (deltaX == 0) {
-            return -1;
-        } else if (deltaY == 0) {
-            return 0;
-        } else {
             return deltaY / deltaX;
-        }
     }
 
     /**
@@ -81,6 +79,7 @@ public class Line {
      * @return length of line segment. length is from type double.
      */
     public double length() {
+
         return this.start.distance(this.end);
     }
 
@@ -141,107 +140,61 @@ public class Line {
      * intersect.
      */
     public Point intersectionWith(Line other) {
+        if(isVertical() == true) {
+            return CalculateIntersectionwhenLineIsVertical(other);
+        } else {
+            return CalculateIntersectionwhenLineIsNotVertical(other);
+        }
+    }
+
+    private Point CalculateIntersectionwhenLineIsVertical(Line other) {
         double x = 0;
         double y = 0;
-        // check the two line are equal. in this case return the starting point of
-        // current line instance.
-        if (this.equals(other)) {
-            return this.start;
-        } else if (this.isOneDot()) { /*
-         * check if the current line is actually one point. in this case we just have to
-         * check if the other line instance contains the current point
-         */
-            if (other.contains(this.end())) {
-                Point p = new Point(this.end().getX(), this.end().getY());
-                return p;
+        if(other.isVertical() == true) {
+            if (other.start.getX() == this.start().getX()) {
+                if (other.start().isBetweenDots(this.start(), this.end())) {
+                    return other.start();
+                } else if (other.end().isBetweenDots(this.start(), this.end())) {
+                    return other.end();
+                } else {
+                    return null;
+                }
             } else {
                 return null;
             }
-            /*
-             * special case to check intersection but the line are horizontal. in this case
-             * we have to find the intersection point without the line equation-
-             * slope\intercept form.
-             */
-        } else if (this.getSlope() == 0 && other.getSlope() == 0) {
-            return findIntersectingPointForVerticalAndHorizontal(other);
-            /*
-             * special case to check intersection but the line are vertical. in this case
-             * both line have undefined slope. in this case we have to find the intersection
-             * point without the line equation- slope\intercept form.
-             */
-        } else if (this.isVertical() && other.isVertical()) {
-            return findIntersectingPointForVerticalAndHorizontal(other);
-        } else if (this.isVertical()) { // check intersection when just the current line segment is vertical.
-            x = this.start().getX();
-            y = this.start().getX() * other.getSlope() + other.getIntercept();
-            Point temp = new Point(x, y);
+        } else {
+                x = this.start().getX();
+                y = other.getSlope() * x + other.getIntercept();
+                Point temp  = new Point(x,y);
+                if (temp.isBetweenDots(other.start(),other.end())) {
+                    return temp;
+                } else {
+                    return null;
+                }
+            }
+    }
+
+    private Point CalculateIntersectionwhenLineIsNotVertical(Line other) {
+        double x = 0;
+        double y = 0;
+        if(other.isVertical() == true) {
+            x = other.start().getX();
+            y = this.getSlope() * x + this.getIntercept();
+            Point temp  = new Point(x,y);
             if (this.contains(temp)) {
                 return temp;
             } else {
                 return null;
             }
-            // check intersection when just the other line segment is vertical.
-        } else if (other.isVertical()) {
-            x = other.start().getX();
-            y = other.start().getX() * this.getSlope() + this.getIntercept();
-            Point temp = new Point(x, y);
-            if (other.contains(temp)) {
+        } else {
+            x = (this.getIntercept() - other.getIntercept()) / ((other.getSlope() - this.getSlope()));
+            y = other.getSlope() * x + other.getIntercept();
+            Point temp = new Point (x,y);
+            if (other.contains(temp) && this.contains(temp)) {
                 return temp;
             } else {
                 return null;
             }
-            /*
-             * check if both lines have the same slope but they are not vertical. in this
-             * case we have to find the intersection point without the line equation-
-             * slope\intercept form
-             */
-        } else if (this.getSlope() == other.getSlope() && !other.isVertical() && !this.isVertical()) {
-            if (this.getIntercept() == other.getIntercept()) {
-                return findIntersectingPointForVerticalAndHorizontal(other);
-            } else {
-                return null;
-            }
-            /*
-             * this is the final test- we got two ordinary lines with slope and intercept.
-             * we will find the intersection point using the line equation - slope intercept
-             * logic.
-             */
-        } else {
-            // first we need to find mutual point which exist in two lines.
-            x = (this.getIntercept() - other.getIntercept()) / ((other.getSlope() - this.getSlope()));
-            y = other.getSlope() * x + other.getIntercept();
-            Point intersectionPoint = new Point(x, y);
-            // check if the point satisfies both lines equation.
-            if (this.contains(intersectionPoint) && other.contains(intersectionPoint)) {
-                return intersectionPoint;
-            } else {
-                return null;
-            }
-        }
-    }
-
-    /**
-     * helper method for "intersectionWith" method to find intersection point in two
-     * line without the line equation logic.
-     * @param other other line instance.
-     * @return new instance of type Point if both lines have intersection point or
-     * null otherwise.
-     */
-    private Point findIntersectingPointForVerticalAndHorizontal(Line other) {
-        if (other.contains(this.start())) {
-            Point p = new Point(this.start().getX(), this.start().getY());
-            return p;
-        } else if (other.contains(this.end())) {
-            Point p = new Point(this.end().getX(), this.end().getY());
-            return p;
-        } else if (this.contains(other.end())) {
-            Point p = new Point(other.end().getX(), other.end().getY());
-            return p;
-        } else if (this.contains(other.start())) {
-            Point p = new Point(other.start().getX(), other.start().getY());
-            return p;
-        } else {
-            return null;
         }
     }
 
@@ -254,8 +207,9 @@ public class Line {
     public boolean equals(Line other) {
         if ((this.start().equals(other.start())) && (this.end().equals(other.end()))) {
             return true;
+        } else {
+            return false;
         }
-        return false;
     }
 
     /**
@@ -275,11 +229,11 @@ public class Line {
                 return (other.isBetweenDots(this.start(), this.end()));
             }
         }
-        /*
-         * final phase is to check if the point is in current line segment start and end
-         * points.
-         */
-        return (other.isBetweenDots(this.start(), this.end()));
+            /*
+             * final phase is to check if the point is in current line segment start and end
+             * points.
+             */
+            return (other.isBetweenDots(this.start(), this.end()));
     }
 
     /**
@@ -287,6 +241,6 @@ public class Line {
      * @return true if the line is vertical, false otherwise.
      */
     public boolean isVertical() {
-        return (this.getSlope() == -1 && (this.start().getX() - this.end().getX() == 0));
+        return this.isVertical;
     }
 }
