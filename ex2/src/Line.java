@@ -140,6 +140,9 @@ public class Line {
      * intersect.
      */
     public Point intersectionWith(Line other) {
+        if(this.equals(other) == true) {
+            return null;
+        }
         if(isVertical() == true) {
             return CalculateIntersectionwhenLineIsVertical(other);
         } else {
