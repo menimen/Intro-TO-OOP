@@ -56,7 +56,7 @@ public class MultipleFramesBouncingBallsAnimation {
                 ballArr[i].drawOn(d);
             }
             gui.show(d);
-            sleeper.sleepFor(100);  // wait for 50 milliseconds.
+            sleeper.sleepFor(50);  // wait for 50 milliseconds.
         }
     }
 }

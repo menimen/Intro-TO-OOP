@@ -66,20 +66,47 @@ public class Ball {
     }
 
     public void moveOneStep() {
-        if( this.getVelocity().getDx() >= 0 && (this.center.getX() + this.radius + this.getVelocity().getDx()) > border.getLowerrightX()) {
-            this.setVelocity(this.getVelocity().getDx() * -1, this.getVelocity().getDy());
+
+        if( this.getVelocity().getDx() > 0 && (this.center.getX() + this.radius + this.getVelocity().getDx()) >
+                border.getLowerrightX()) {
+            moveOneStepRight();
         }
-        if(this.getVelocity().getDx() <= 0 && ((this.center.getX()  - this.radius + this.getVelocity().getDx()) < border.getUpperleftX() )) {
-            this.setVelocity(this.getVelocity().getDx() * -1, this.getVelocity().getDy());
+        if(this.getVelocity().getDx() < 0 && ((this.center.getX()  - this.radius + this.getVelocity().getDx()) < border.getUpperleftX() )) {
+            //this.setVelocity(this.getVelocity().getDx() * -1, this.getVelocity().getDy());
+            moveOneStepLeft();
         }
-        if(this.getVelocity().getDy() >= 0 && ((this.center.getY() + radius + this.getVelocity().getDy()) > border.getLowerrightY()) ) {
-            this.setVelocity(this.getVelocity().getDx() , this.getVelocity().getDy() * -1);
+        if(this.getVelocity().getDy() > 0 && ((this.center.getY() + radius + this.getVelocity().getDy()) > border.getLowerrightY()) ) {
+            //this.setVelocity(this.getVelocity().getDx() , this.getVelocity().getDy() * -1);
+            moveOneStepDown();
         }
-        if(this.getVelocity().getDy() <= 0 && (this.center.getY() - radius + this.getVelocity().getDy()) < border.getUpperleftY())  {
-            this.setVelocity(this.getVelocity().getDx() , this.getVelocity().getDy() * -1);
+        if(this.getVelocity().getDy() < 0 && (this.center.getY() - radius + this.getVelocity().getDy()) < border.getUpperleftY())  {
+            //this.setVelocity(this.getVelocity().getDx() , this.getVelocity().getDy() * -1);
+            moveOneStepUp();
         }
         this.center = this.getVelocity().applyToPoint(this.center);
     }
+
+    private void moveOneStepDown() {
+        this.center.setY(border.getLowerrightY());
+        this.setVelocity(this.getVelocity().getDx(), this.getVelocity().getDy() * -1);
+    }
+
+    private void moveOneStepUp() {
+        this.center.setY(border.getUpperleftY());
+        this.setVelocity(this.getVelocity().getDx(), this.getVelocity().getDy() * -1);
+    }
+
+    private void moveOneStepLeft() {
+        this.center.setX(border.getUpperleftX());
+        this.setVelocity(this.getVelocity().getDx() * -1, this.getVelocity().getDy());
+    }
+
+
+    private void moveOneStepRight() {
+            this.center.setPoint(border.getLowerrightX() - this.radius , this.center.getY() + this.getVelocity().getDy());
+            this.setVelocity(this.getVelocity().getDx() * -1, this.getVelocity().getDy());
+    }
+
     public static Ball generateRandomBall(int radius,Rectangle rec) {
         Random rand = new Random(); // create a random-number generator
         double x1 = rand.nextInt((int)rec.getLowerrightX()) + rec.getUpperleftX(); // get integer in range 1-200
