@@ -87,7 +87,7 @@ public class Ball {
     }
 
     private void moveOneStepDown() {
-        this.center.setPoint(this.center.getX() + this.getVelocity().getDx() , border.getLowerrightY() + this.radius);
+        this.center.setPoint(this.center.getX() + this.getVelocity().getDx() , border.getLowerrightY() - this.radius);
         this.setVelocity(this.getVelocity().getDx(), this.getVelocity().getDy() * -1);
     }
 
