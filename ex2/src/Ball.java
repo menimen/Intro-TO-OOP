@@ -87,17 +87,17 @@ public class Ball {
     }
 
     private void moveOneStepDown() {
-        this.center.setY(border.getLowerrightY());
+        this.center.setPoint(this.center.getX() + this.getVelocity().getDx() , border.getLowerrightY() + this.radius);
         this.setVelocity(this.getVelocity().getDx(), this.getVelocity().getDy() * -1);
     }
 
     private void moveOneStepUp() {
-        this.center.setY(border.getUpperleftY());
+        this.center.setPoint(this.center.getX() + this.getVelocity().getDx() , border.getUpperleftY() + this.radius);
         this.setVelocity(this.getVelocity().getDx(), this.getVelocity().getDy() * -1);
     }
 
     private void moveOneStepLeft() {
-        this.center.setX(border.getUpperleftX());
+        this.center.setPoint(border.getUpperleftX() + this.radius , this.center.getY() + this.getVelocity().getDy());
         this.setVelocity(this.getVelocity().getDx() * -1, this.getVelocity().getDy());
     }
 
